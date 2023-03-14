@@ -16,18 +16,9 @@ use Illuminate\Support\Facades\Http;
 |
 */
 
-Route::get('/saludo/{nombre}', function ($nombre = 'Usuario'){
-    return 'Hola '.$nombre." :3";
-});
-
-// Route::post('/orcid/create', function(Request $request) {
-//     $response = Http::accept('application/json')
-//         ->get('https://pub.orcid.org/v3.0/'.$request->orcid);
-
-//     return $response->json();
-// });
-
+Route::get('/orcid/{orcid}', [InvestigatorController::class, 'show']);
 Route::post('/orcid/create/', [InvestigatorController::class, 'create']);
+Route::delete('/orcid/delete/{orcid}', [InvestigatorController::class, 'destroy']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

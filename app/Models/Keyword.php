@@ -10,7 +10,7 @@ class Keyword extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['keyword'];
+    protected $fillable = ['id', 'investigator_id', 'keyword'];
 
     public $incrementing = false;
     public $timestamps = false;

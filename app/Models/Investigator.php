@@ -10,7 +10,7 @@ class Investigator extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'last_name', 'principal_email'];
+    protected $fillable = ['orcid', 'name', 'last_name', 'principal_email'];
 
     protected $primaryKey = 'orcid';
 
@@ -23,6 +23,6 @@ class Investigator extends Model
 
     public function keywords(): HasMany
     {
-        return $this->hasMany(Keyword::class);
+        return $this->hasMany(Keyword::class, 'investigator_id');
     }
 }

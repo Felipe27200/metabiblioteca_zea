@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('keywords', function (Blueprint $table) {
             $table->bigInteger('id');
             $table->string("investigator_id");
-            $table->string('keyword', 100)->unique();
+            $table->string('keyword')->unique();
 
             $table->primary('id');
             $table->foreign('investigator_id')->references('orcid')->on('investigators');

@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 
+use App\Models\Investigator;
+use App\Models\Keyword;
+use Illuminate\Support\Facades\DB;
+
 class InvestigatorController extends Controller
 {
     /**
@@ -25,11 +29,17 @@ class InvestigatorController extends Controller
             ->get('https://pub.orcid.org/v3.0/'.$request->orcid);
 
         if ($response->notFound())
-            return response()->json(['response' => 'No se Encontro el Orcid']);
-
-        // return $response->json()['person']['keywords']['keyword'];
+            return response()->json(['response' => 'No se Encontro el orcid']);
 
         $orcidData['orcid'] = $response->json()['orcid-identifier']['path'];
+
+        $orcidExists = $this->findInvestigator($orcidData['orcid'], 'El registro ya está en base de datos');
+
+        if (gettype($orcidExists) != 'boolean')
+            return $orcidExists;
+
+        unset($orcidExists);
+
         $orcidData['name'] = $response->json()['person']['name']['given-names']['value'];
         $orcidData['last_name'] = $response->json()['person']['name']['family-name']['value'];
 
@@ -44,7 +54,25 @@ class InvestigatorController extends Controller
             }
         }
 
-        return response()->json($orcidData);
+        $orcid = Investigator::create($orcidData);
+
+        $keywords = array();
+
+        if (!empty($response->json()['person']['keywords']['keyword']))
+        {
+            foreach($response->json()['person']['keywords']['keyword'] as $keyword)
+            {
+                array_push($keywords, array(
+                    "id" => $keyword['put-code'],
+                    "investigator_id" => $orcid->orcid,
+                    "keyword" => $keyword['content']
+                ));
+            }
+        }
+
+        Keyword::insert($keywords);
+
+        return response()->json(['response' => 'Se logro Nea!!!']);
     }
 
     /**
@@ -58,9 +86,22 @@ class InvestigatorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $orcid = Investigator::findOr($id, function () {
+            return false;
+        });
+
+        if (gettype($orcid) == 'boolean')
+            return response()->json(["response" => 'Registro no encontrado']);
+
+        $keywords = Investigator::find($id)->keywords;
+
+        return response()->json([
+            'response' => 'Exito',
+            'orcid' => $orcid,
+            'keywords' => $keywords
+        ]);
     }
 
     /**
@@ -84,6 +125,28 @@ class InvestigatorController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $orcid = Investigator::findOr($id, function () {
+            return false;
+        });
+
+        if (gettype($orcid) == 'boolean')
+            return response()->json(['response' => 'El registro no está en Base de Datos']);
+
+        Keyword::where('investigator_id', $id)->delete();
+        $orcid->delete();
+
+        return response()->json(['response' => 'Eliminado satisfactoriamente']);
+    }
+
+    public function findInvestigator($orcid, $message)
+    {
+        $orcidExists = Investigator::findOr($orcid, function () {
+            return false;
+        });
+
+        if (gettype($orcidExists) != 'boolean')
+            return response()->json(['response' => $message]);
+        else
+            return false;
     }
 }
