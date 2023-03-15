@@ -16,10 +16,7 @@ use Illuminate\Support\Facades\Http;
 |
 */
 
+Route::get('/orcid/list', [InvestigatorController::class, 'index']);
 Route::get('/orcid/{orcid}', [InvestigatorController::class, 'show']);
-Route::post('/orcid/create/', [InvestigatorController::class, 'create']);
+Route::post('/orcid/create/{orcid}', [InvestigatorController::class, 'store']);
 Route::delete('/orcid/delete/{orcid}', [InvestigatorController::class, 'destroy']);
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
