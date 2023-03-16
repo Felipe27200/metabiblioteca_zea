@@ -63,7 +63,7 @@ class InvestigatorController extends Controller
         Keyword::insert($keywords);
 
         return response()->json([
-            'response' => 'succesful',
+            'response' => 'successful',
             'message' => 'Registro Exitoso'
         ]);
     }
@@ -80,7 +80,7 @@ class InvestigatorController extends Controller
         if (gettype($orcid) == 'boolean')
         {
             return response()->json([
-                "response" => 'unsuccesful',
+                "response" => 'unsuccessful',
                 'message' => 'Registro no encontrado'
             ]);
 
@@ -101,7 +101,7 @@ class InvestigatorController extends Controller
         if (gettype($orcid) == 'boolean')
         {
             return response()->json([
-                'response' => 'unsuccesful',
+                'response' => 'unsuccessful',
                 'message' => 'El registro no está en Base de Datos'
             ]);
         }
@@ -110,7 +110,7 @@ class InvestigatorController extends Controller
         $orcid->delete();
 
         return response()->json([
-            'response' => 'succesful',
+            'response' => 'successful',
             'message' => 'Eliminado satisfactoriamente'
         ]);
     }
@@ -124,7 +124,7 @@ class InvestigatorController extends Controller
         if (gettype($orcidExists) != 'boolean')
         {
             return response()->json([
-                'response' => 'unsuccesful',
+                'response' => 'unsuccessful',
                 'message' => $message
             ]);
         }
